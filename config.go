@@ -7,7 +7,7 @@ import (
 // Config contains config
 type Config struct {
 	RoutePrefix                string `env:"ROUTE_PREFIX"`
-	GoogleOrigin               string `env:"GOOGLE_ORIGIN" default:"https://www.google-analytics.com"`
+	GoogleOrigin               string `env:"GOOGLE_ORIGIN" default:"https://www.googletagmanager.com"`
 	InjectParamsFromReqHeaders string `env:"INJECT_PARAMS_FROM_REQ_HEADERS"`
 	SkipParamsFromReqHeaders   string `env:"SKIP_PARAMS_FROM_REQ_HEADERS"`
 	Port                       string `env:"PORT" default:"3000"`

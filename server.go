@@ -76,8 +76,17 @@ func handleRequestAndRedirect(c *fiber.Ctx) error {
 		reqURI = strings.TrimPrefix(reqURI, config.RoutePrefix)
 		upstreamReq.SetRequestURI(reqURI)
 	}
+
+	// [WORKAROUND] To "easily" manage multiple Google domains, set this hard condition
+	var targetOrigin string
+	if strings.HasPrefix(reqURI, "/g/collect") {
+		targetOrigin = "https://www.google-analytics.com"
+	} else {
+		targetOrigin = config.GoogleOrigin
+	}
+
 	// Overwrite
-	url, _ := url.Parse(config.GoogleOrigin)
+	url, _ := url.Parse(targetOrigin)
 	upstreamReq.SetHost(url.Host)
 	upstreamReq.URI().SetScheme(url.Scheme)
 
@@ -150,7 +159,9 @@ func postprocessResponse(upstreamResp *fasthttp.Response, c *fiber.Ctx) error {
 	var contentType = string(upstreamResp.Header.ContentType())
 	if strings.HasPrefix(contentType, "text/javascript") || strings.HasPrefix(contentType, "application/javascript") {
 		find := []string{
+			"\"+(a?a+\".\":\"\")+\"analytics.google.com",
 			"ssl.google-analytics.com",
+			"\"+a+\".google-analytics.com",
 			"www.google-analytics.com",
 			"google-analytics.com",
 			"www.googletagmanager.com",
